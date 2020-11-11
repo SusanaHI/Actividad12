@@ -1,0 +1,194 @@
+import java.util.*;
+import java.io.*;
+
+//Clase principal AddressBook
+public class AddressBook {
+	
+	Scanner sc = new Scanner(System.in);
+	
+	HashMap<String, String> Contactos = new HashMap<String, String>();
+	
+	//Constructor
+	public AddressBook() {
+		
+	}
+
+	public static void main(String[] args) {
+		
+		AddressBook obj = new AddressBook();
+		obj.Menu();
+		
+	}
+	
+	public void Menu() {
+		
+		String telefono, nombre;
+		boolean verdadero = true;
+		
+		while(verdadero) {
+			
+			System.out.println("Introduce la opcion que deseas: \n 1 - Leer archivo. \n 2 - Crear un nuevo contacto. \n 3 - Guardar en archivo. \n 4 - Mostrar todos los contactos. \n 5 - Borrar un contacto. \n 0 - Salir");
+			int opcion = sc.nextInt();
+			
+			switch(opcion) {
+			
+			case 1:
+				
+				load();
+				break;
+				
+			case 2:
+				
+				System.out.println("Introduce el numero telefonico del nuevo contacto: ");
+				telefono = sc.next();
+				System.out.println("Introduce el nombre del nuevo contacto ");
+				nombre = sc.next();
+				nuevoContacto(telefono, nombre, Contactos);
+				break;
+			
+			case 3:
+				
+				save();
+				System.out.println("Contacto guardado exitosamente.");
+				break;
+			
+			case 4:
+				
+				System.out.println("\tD I R E C T O R I O");
+				mostrarContactos(Contactos);
+				break;
+			
+			case 5:
+				
+				System.out.println("Introduce el numero telefonico del contacto que deseas borrar: ");
+				telefono = sc.next();
+				borrarContacto(telefono, Contactos);
+				save();
+				break;
+				
+			case 0:
+				
+				verdadero = false;
+				break;
+				
+			default:
+				
+				System.out.println("Opcion invalida. Intente de nuevo. ");
+				
+			}
+			
+		}
+		
+	}
+	
+	public void save() {
+		
+		FileWriter fichero = null;
+        PrintWriter pw = null;
+		        
+        try
+        {
+            fichero = new FileWriter("Contactos.txt");
+            pw = new PrintWriter(fichero);
+            
+            for(String i : Contactos.keySet()) {
+    			
+    			pw.println(i + "," + Contactos.get(i));
+    			
+    		}
+            
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+           try {
+           // Nuevamente aprovechamos el finally para asegurarnos que se cierra el fichero.
+	           if (null != fichero) {
+	        	  
+	              fichero.close();
+	              
+	           }
+           
+           } catch (Exception e2) {
+              e2.printStackTrace();
+           }
+        }
+        
+	}
+	
+	public void load() {
+		
+		File archivo = null;
+		FileReader fr = null;
+		BufferedReader br = null;
+
+		try {
+			// Apertura del fichero y creacion de BufferedReader para poder hacer una lectura comoda (disponer del metodo readLine()).
+			archivo = new File ("Contactos.txt");
+			fr = new FileReader (archivo);
+			br = new BufferedReader(fr);
+
+			// Lectura del fichero
+			String linea;
+			String[] separador = null;
+			
+			 while((linea=br.readLine())!=null) {
+				 separador = linea.split(",");
+			     Contactos.put(separador[0], separador[1]);
+			     System.out.println(linea);
+			 }
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			// En el finally cerramos el fichero, para asegurarnos que se cierra tanto si todo va bien como si salta una excepcion.
+			try{                    
+				if( null != fr ){   
+				   fr.close();     
+				}                  
+			}catch (Exception e2){ 
+				e2.printStackTrace();
+			}
+		}
+	}
+	
+	public static void nuevoContacto(String telefono, String nombre, HashMap<String, String> Contactos) {
+		
+		if(Contactos.containsKey(telefono)) {
+			
+			System.out.println("Telefono repetido, no se puede registrar el contacto. ");
+			
+		}else {
+			
+			Contactos.put(telefono, nombre);
+			System.out.println("Registro exitoso. ");
+			
+		}
+		
+	}
+	
+	public static void mostrarContactos(HashMap<String, String> Contactos) {
+		
+		for(String i : Contactos.keySet()) {
+			
+			System.out.println("Numero: " + i + " Nombre: " + Contactos.get(i));
+			
+		}
+		
+	}
+	
+	public static void borrarContacto(String telefono, HashMap<String, String> Contactos) {
+		
+		if(Contactos.containsKey(telefono)) {
+			
+			Contactos.remove(telefono);
+			System.out.println("Contacto borrado exitosamente. ");
+			
+		}else {
+			
+			System.out.println("Telefono no encontrado. No se puede realizar la operacion. ");
+			
+		}
+		
+	}
+	
+}
